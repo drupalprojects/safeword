@@ -304,13 +304,18 @@ function safeword_field_widget_form(&$form, &$form_state, $field, $instance, $la
       // No need to trigger the extra checks.
       if ($field['settings']['unique']) {
         $element['machine']['#machine_name']['exists'] = 'safeword_value_collides';
+
         $element['machine']['#exists_params'] = array(
           'field_name' => $field['field_name'],
           'entity_type' => $instance['entity_type'],
           'bundle' => $instance['bundle'],
         );
       }
+      else {
+        $element['machine']['#machine_name']['exists'] = 'safeword_value_not_unique';
+      }
   }
+
   return $element;
 }
 
@@ -318,7 +323,7 @@ function safeword_field_widget_form(&$form, &$form_state, $field, $instance, $la
 /**
  * Uniqueness callback for safeword fields.
  */
-function safeword_value_collides($name, array $element = NULL) {
+function safeword_value_collides($name, array $element = NULL, $form_state) {
   // This should never be the case, but it doesn't hurt to check.
   if (empty($element) && empty($element['#exists_params'])) {
     return FALSE;
@@ -327,16 +332,25 @@ function safeword_value_collides($name, array $element = NULL) {
     $settings = $element['#exists_params'];
 
     $query = new EntityFieldQuery();
+
     $query
       ->entityCondition('entity_type', $settings['entity_type'], '=')
       ->fieldCondition($settings['field_name'], 'machine', $name, '=')
       ->count();
+
     if (!empty($settings['bundle'])) {
       $query->entityCondition('bundle', $settings['bundle'], '=');
     }
 
     return $query->execute() > 0 ? TRUE : FALSE;
   }
+}
+
+/**
+ * Dummy callback for when uniquenes doesn't need to be checked, but FAPI checks anyway.
+ */
+function safeword_value_not_unique($name, array $element = NULL, $form_state) {
+  return FALSE;
 }
 
 
