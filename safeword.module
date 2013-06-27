@@ -23,7 +23,7 @@
 function safeword_field_info() {
   return array(
     'safeword' => array(
-      'label' => t('Text with machine name'),
+      'label' => t('Machine name from text'),
       'description' => t('A field with human readable text and a scrubbed machine-safe variation.'),
       'default_widget' => 'safeword_machine_name',
       'default_formatter' => 'safeword_human',
@@ -31,7 +31,7 @@ function safeword_field_info() {
       'default_token_formatter' => 'safeword_machine_basic',
     ),
     'safeword_title' => array(
-      'label' => t('Machine name from title'),
+      'label' => t('Machine name from Title'),
       'description' => t('A field with a scrubbed machine-safe variation of the node title.'),
       'default_widget' => 'safeword_machine_name_only',
       'default_formatter' => 'safeword_machine_basic',
@@ -82,7 +82,7 @@ function safeword_field_settings_form($field, $instance, $has_data) {
   $settings += array(
     'max_length' => 255,
     'machine_label' => t('URL-safe'),
-    'machine_description' => t('A URL-safe version of the text. It may only contain lowercase letters, numbers and underscores. Leave blank to re-auto generate.'),
+    'machine_description' => t('A URL-safe version of the text. It may only contain lowercase letters, numbers and underscores. Leave blank to re-generate.'),
     'replace_pattern' => '(--|<[^<>]+>|[^a-z0-9-])+', // old [^a-z0-9-]+
     'replace_value' => '-',
     'allow_machine_changes' => TRUE,
@@ -243,7 +243,7 @@ function safeword_field_formatter_view($entity_type, $entity, $field, $instance,
 function safeword_field_widget_info() {
   return array(
     'safeword_machine_name' => array(
-      'label' => t('Text with machine name'),
+      'label' => t('Machine name with text'),
       'field types' => array('safeword'),
     ),
     'safeword_machine_name_only' => array(
