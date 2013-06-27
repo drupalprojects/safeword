@@ -31,8 +31,8 @@ function safeword_field_info() {
       'default_token_formatter' => 'safeword_machine_basic',
     ),
     'safeword_title' => array(
-      'label' => t('Machine name for the title'),
-      'description' => t('A field with a scrubbed machine-safe variation on the node title.'),
+      'label' => t('Machine name from title'),
+      'description' => t('A field with a scrubbed machine-safe variation of the node title.'),
       'default_widget' => 'safeword_machine_name_only',
       'default_formatter' => 'safeword_machine_basic',
       // Support default token formatter for field tokens.
@@ -280,16 +280,18 @@ function safeword_field_widget_form(&$form, &$form_state, $field, $instance, $la
         '#description' => $element['#description'],
         '#required' => $element['#required']
       );
-      $machine_source = array($field['field_name'], $langcode, $delta, 'human');
+
+      $safeword_source = array($field['field_name'], $langcode, $delta, 'human');
 
     case 'safeword_machine_name_only':
+
       $element['machine'] = array(
         '#type' => 'machine_name',
         '#default_value' => empty($items[$delta]['machine']) ? '' : $items[$delta]['machine'],
         '#maxlength' => $field['settings']['max_length'],
         '#description' => $field['settings']['machine_description'],
         '#machine_name' => array(
-          'source' => isset($machine_source) ? $machine_source : array('title_field', $langcode, $delta, 'value'),
+          'source' => isset($safeword_source) ? $safeword_source : array('title'),
           'label' => $field['settings']['machine_label'],
           'replace_pattern' => $field['settings']['replace_pattern'],
           'replace' => $field['settings']['replace_value'],
