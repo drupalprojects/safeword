@@ -83,7 +83,7 @@ function safeword_field_settings_form($field, $instance, $has_data) {
     'max_length' => 255,
     'machine_label' => t('URL-safe'),
     'machine_description' => t('A URL-safe version of the text. It may only contain lowercase letters, numbers and underscores. Leave blank to re-auto generate.'),
-    'replace_pattern' => '[^a-z0-9-]+',
+    'replace_pattern' => '(--|<[^<>]+>|[^a-z0-9-])+', // old [^a-z0-9-]+
     'replace_value' => '-',
     'allow_machine_changes' => TRUE,
     'unique' => FALSE,
