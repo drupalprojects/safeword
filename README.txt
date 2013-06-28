@@ -19,6 +19,10 @@ Safeword exposes a custom FieldAPI field type that stores two strings using the
 name/machine name approach. It can be useful when generating PathAuto aliases,
 exposing Views arguments, and so on.
 
+One common use is to not give users permission to 'Create and edit URL aliases' and instead give
+them access to a Safeword field which uses the node title as it's source. So that users can only
+edit a limited part of the path, keeping safe the other parts that your site features may rely on.
+
 
 ********************************************************************
 INSTALLATION:
@@ -61,6 +65,12 @@ This module also provides each of these options as a token that can be used in v
 More info on the Token system:
 
 http://drupal.org/documentation/modules/token
+
+If you need users to enter a machine name for a path, a good Replacement pattern would be:
+
+(--|<[^<>]+>|[^/a-z0-9-])+
+
+This allows '/' as part of the machine name.
 
 
 

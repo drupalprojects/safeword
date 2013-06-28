@@ -124,7 +124,7 @@ function safeword_field_settings_form($field, $instance, $has_data) {
       '#title' => t('Replacement pattern'),
       '#default_value' => $settings['replace_pattern'],
       '#required' => TRUE,
-      '#description' => t('A regular expression matching the banned characters.'),
+      '#description' => t('A regular expression matching the banned characters. (--|<[^<>]+>|[^/a-z0-9-])+ is recommended for URL paths.'),
     );
 
     $form['replace_value'] = array(
