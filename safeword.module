@@ -87,6 +87,8 @@ function safeword_field_settings_form($field, $instance, $has_data) {
     'replace_value' => '-',
     'allow_machine_changes' => TRUE,
     'unique' => FALSE,
+    'show_complete_path' => FALSE,
+    'complete_path_label' => t('Complete path'),
   );
 
   $form = array();
@@ -146,6 +148,13 @@ function safeword_field_settings_form($field, $instance, $has_data) {
       '#title' => t('Allow machine name changes'),
       '#default_value' => $settings['allow_machine_changes'],
       '#description' => t('If this option is disabled, machine-readable text will be locked after creation.'),
+    );
+
+    $form['show_complete_path'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Show the complete path'),
+      '#default_value' => $settings['show_complete_path'],
+      '#description' => t('If this option is enabled a label will appear on the content creation screen, showing the complete path.'),
     );
   }
 
@@ -261,6 +270,8 @@ function safeword_field_widget_info() {
  * element to display both values for editing.
  */
 function safeword_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
+
+  // Add machine name target functionality
   $element += array(
     '#delta' => $delta,
   );
@@ -295,10 +306,53 @@ function safeword_field_widget_form(&$form, &$form_state, $field, $instance, $la
           'label' => $field['settings']['machine_label'],
           'replace_pattern' => $field['settings']['replace_pattern'],
           'replace' => $field['settings']['replace_value'],
+          'field_prefix' => '',
+          'field_suffix' => '',
         ),
         '#required' => $element['#required'],
         '#disabled' => (!empty($items[$delta]['machine']) && empty($field['settings']['allow_machine_changes'])),
       );
+
+      // Show complete path functionality
+      //   - use path auto settings to show the full URL to the user
+      if ($field['settings']['show_complete_path'] && module_exists('pathauto')) {
+
+        // Load the JS file
+        drupal_add_js(drupal_get_path('module', 'safeword') . '/safeword.js', array('weight' => 1));
+
+        // Get the pattern from pathauto
+        $pathauto_pattern = pathauto_pattern_load_by_entity($element['#entity_type'], $element['#bundle'], $element['#language']);
+
+        // Find out what the token name will be
+        $token = '[' . $element['#entity_type'] . ':' . $field['field_name'] . ']';
+
+        // Edge case: if "Machine name from title", and there is no pathauto
+        //  token containing field name but there is an entity:title token,
+        //  replace the title instead
+        if ($field['type'] == 'safeword_title') {
+
+          $title_field_token = '[' . $element['#entity_type'] . ':title]';
+
+          if (strpos($pathauto_pattern, $token) === FALSE
+            && strpos($pathauto_pattern, $title_field_token) !== FALSE) {
+            $token = $title_field_token;
+
+          }
+        }
+
+        // Explode the path based on the token
+        $exploded_path = explode($token, $pathauto_pattern);
+
+        if (count($exploded_path) > 1) {
+          $element['machine']['#machine_name']['field_prefix'] = array_shift($exploded_path);
+
+          // Implode the remaining path - if the token appears more than once
+          // then only replace the first version.
+          $element['machine']['#machine_name']['field_suffix'] = implode($token, $exploded_path);
+        }
+      }
+
+
 
       // Only add the code for the uniqueness check if the field requires it.
       // No need to trigger the extra checks.
