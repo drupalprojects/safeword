@@ -10,6 +10,24 @@
 
 
 /**
+ * Implementation of hook_theme().
+ */
+function safeword_theme() {
+  return array(
+    'transporter_paths_administration_form' => array(
+      'render element' => 'form'
+    ),
+    'transporter_site_configure_form' => array(
+      'render element' => 'form'
+    ),
+    'safeword_un_editable_path_parts' => array(
+      'variables' => array('path' => ''),
+    ),
+  );
+}
+
+
+/**
  * Field definition code. Handles basic metadata for the field, and the settings
  * form.
  */
@@ -143,6 +161,13 @@ function safeword_field_settings_form($field, $instance, $has_data) {
       '#default_value' => $settings['unique'],
     );
 
+    $form['show_complete_path'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Show the complete path'),
+      '#default_value' => $settings['show_complete_path'],
+      '#description' => t("Display the complete path to the node next to the source field as it's being edited."),
+    );
+
     $form['allow_machine_changes'] = array(
       '#type' => 'checkbox',
       '#title' => t('Allow machine name changes'),
@@ -150,12 +175,6 @@ function safeword_field_settings_form($field, $instance, $has_data) {
       '#description' => t('If this option is disabled, machine-readable text will be locked after creation.'),
     );
 
-    $form['show_complete_path'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Show the complete path'),
-      '#default_value' => $settings['show_complete_path'],
-      '#description' => t('If this option is enabled a label will appear on the content creation screen, showing the complete path.'),
-    );
   }
 
   return $form;
@@ -317,8 +336,9 @@ function safeword_field_widget_form(&$form, &$form_state, $field, $instance, $la
       //   - use path auto settings to show the full URL to the user
       if ($field['settings']['show_complete_path'] && module_exists('pathauto')) {
 
-        // Load the JS file
+        // Load the JS & CSS files
         drupal_add_js(drupal_get_path('module', 'safeword') . '/safeword.js', array('weight' => 1));
+        drupal_add_css(drupal_get_path('module', 'safeword') . '/safeword.css', array('group' => CSS_DEFAULT, 'type' => 'file'));
 
         // Get the pattern from pathauto
         $pathauto_pattern = pathauto_pattern_load_by_entity($element['#entity_type'], $element['#bundle'], $element['#language']);
@@ -344,6 +364,13 @@ function safeword_field_widget_form(&$form, &$form_state, $field, $instance, $la
         $exploded_path = explode($token, $pathauto_pattern);
 
         if (count($exploded_path) > 1) {
+
+          foreach ($exploded_path as $path_key => $path_part) {
+            //$exploded_path[$path_key] = '<span class="safeword-path-un-editable">' . $path_part . '</span>';
+            $exploded_path[$path_key] = theme('safeword_un_editable_path_parts', array('path' => $path_part));
+          }
+
+
           $element['machine']['#machine_name']['field_prefix'] = array_shift($exploded_path);
 
           // Implode the remaining path - if the token appears more than once
@@ -425,4 +452,12 @@ function safeword_field_views_data($field) {
     $views_fields[$key][$field['field_name'] . '_machine']['argument']['name field'] = $field['field_name'] . '_human';
   }
   return $views_fields;
+}
+
+/**
+ * Markup of parts of path that can't be edited via the machine-name.
+ */
+function theme_safeword_un_editable_path_parts($variables) {
+
+  return '<span class="safeword-path-un-editable">' . $variables['path'] . '</span>';
 }

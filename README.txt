@@ -32,12 +32,12 @@ check the Drupal web site if you need assistance.
 
 1. Place the entire directory into your Drupal directory:
    sites/all/modules/
-   
+
 
 2. Enable the module by navigating to:
 
    administration > modules
-     
+
   Click the 'Save configuration' button at the bottom to commit your
   changes.
 
@@ -72,9 +72,12 @@ If you need users to enter a machine name for a path, a good Replacement pattern
 
 This allows '/' as part of the machine name.
 
+The 'Show the complete path' option will display the full path to the node being created/edited
+next to the source field of the machine name.
 
 
-        
+
+
 
 
 
