@@ -14,12 +14,6 @@
  */
 function safeword_theme() {
   return array(
-    'transporter_paths_administration_form' => array(
-      'render element' => 'form'
-    ),
-    'transporter_site_configure_form' => array(
-      'render element' => 'form'
-    ),
     'safeword_un_editable_path_parts' => array(
       'variables' => array('path' => ''),
     ),
