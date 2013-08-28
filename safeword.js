@@ -41,6 +41,11 @@ Drupal.behaviors.safewordMachineNameTarget = {
       else {
 
         var $targetID = $target.attr('id');
+
+        if (typeof $targetID != 'string') {
+          return;
+        }
+
         if ($targetID.indexOf('-machine') + 8 == $targetID.length) {
 
           var $humanID = $targetID.substr(0, $targetID.indexOf('-machine')) + '-human';
