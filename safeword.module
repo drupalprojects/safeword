@@ -305,7 +305,7 @@ function safeword_field_widget_form(&$form, &$form_state, $field, $instance, $la
         '#required' => $element['#required']
       );
 
-      $safeword_source = array($field['field_name'], $langcode, $delta, 'human');
+      $safeword_source = array_merge($element['#field_parents'], array($field['field_name'], $langcode, $delta, 'human'));
 
     case 'safeword_machine_name_only':
 
