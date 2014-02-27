@@ -94,19 +94,19 @@
           $source.bind('keyup.machineName change.machineName input.machineName', function () {
 
             // Transliterate non-Roman characters to equivalent Roman characters.
-            var sourceTransliterated = '';
+            var that = this;
 
             if ($source.val() !== '') {
 
               var request = $.ajax({
-                async: false,
                 cache: false,
                 url: "/safeword/ajax/transliterate",
                 type: "POST",
                 dataType: "json",
                 data: { source: $source.val()},
                 success: function (data, textStatus, jqXHR) {
-                  sourceTransliterated = data;
+
+                  that.sourceTransliterated = data;
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                   alert(errorThrown);
@@ -114,7 +114,7 @@
               });
             }
 
-            machine = self.transliterate(sourceTransliterated, options);
+            machine = self.transliterate(that.sourceTransliterated, options);
             // Set the machine name to the transliterated value.
             if (machine != '') {
               if (machine != options.replace) {
