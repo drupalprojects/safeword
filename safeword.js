@@ -90,45 +90,59 @@
         // changes, but only if there is no machine name yet; i.e., only upon
         // initial creation, not when editing.
         if ($target.val() == '') {
+          // Helper function to wait until a specified time after last trigger event.
+          // If called again before timeout, resets timer to wait for full period uninterrupted.
+          var typingPause = (function(){
+            var timer = 0;
+            return function(ms, callback) {
+              clearTimeout(timer);
+              timer = setTimeout(callback, ms);
+            }
+          })();
+
+
           $source.bind('keyup.machineName change.machineName input.machineName', function () {
-
             // Transliterate non-Roman characters to equivalent Roman characters.
-            var that = this;
 
-            // Trigger if the source field has a value.
-            if ($source.val() !== '') {
-
-              var request = $.ajax({
-                cache: false,
-                url: "/safeword/ajax/transliterate",
-                type: "POST",
-                dataType: "json",
-                data: { source: $source.val()},
-                success: function (data, textStatus, jqXHR) {
-
-                  that.sourceTransliterated = data;
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                  alert(errorThrown);
-                }
-              });
-            }
-
-            machine = self.transliterate(that.sourceTransliterated, options);
-            // Set the machine name to the transliterated value.
-            if (machine != '') {
-              if (machine != options.replace) {
-                $target.val(machine);
-                $preview.html(options.field_prefix + Drupal.checkPlain(machine) + options.field_suffix);
+            // Wait for this number of milliseconds to check typing has stopped.
+            typingPause(300, function() {
+              // Trigger if the source field has a value.
+              if ($source.val() !== '') {
+                var request = $.ajax({
+                  cache: false,
+                  url: "/safeword/ajax/transliterate",
+                  type: "POST",
+                  dataType: "json",
+                  data: {source: $source.val()},
+                  success: function (data, textStatus, jqXHR) {
+                    machine = self.transliterate(data, options);
+                    // Set the machine name to the transliterated value.
+                    if (machine != '') {
+                      if (machine != options.replace) {
+                        $target.val(machine);
+                        $preview.html(options.field_prefix + Drupal.checkPlain(machine) + options.field_suffix);
+                      }
+                      $suffix.show();
+                    }
+                    else {
+                      $suffix.hide();
+                      $target.val(machine);
+                      $preview.empty();
+                    }
+                  },
+                  error: function (jqXHR, textStatus, errorThrown) {
+                    alert(errorThrown);
+                  }
+                });
               }
-              $suffix.show();
-            }
-            else {
-              $suffix.hide();
-              $target.val(machine);
-              $preview.empty();
-            }
+              else {
+                $suffix.hide();
+                $target.val(machine);
+                $preview.empty();
+              }
+            });
           });
+
           // Initialize machine name preview.
           $source.keyup();
         }
