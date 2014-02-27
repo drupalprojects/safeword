@@ -95,6 +95,7 @@
             // Transliterate non-Roman characters to equivalent Roman characters.
             var that = this;
 
+            // Trigger if the source field has a value.
             if ($source.val() !== '') {
 
               var request = $.ajax({
