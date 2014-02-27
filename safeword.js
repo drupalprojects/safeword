@@ -38,7 +38,6 @@
         var $suffix = $(options.suffix, context);
         var $wrapper = $target.closest('.form-item');
 
-
         var $div = $('<div />').appendTo('body');
         $div.attr('id', 'safeword-data');
 
