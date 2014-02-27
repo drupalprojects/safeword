@@ -94,8 +94,9 @@
           $source.bind('keyup.machineName change.machineName input.machineName', function () {
 
             // Transliterate non-Roman characters to equivalent Roman characters.
+            var sourceTransliterated = '';
+
             if ($source.val() !== '') {
-              var sourceTransliterated = '';
 
               var request = $.ajax({
                 async: false,
