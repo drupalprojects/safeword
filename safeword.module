@@ -49,8 +49,9 @@ function safeword_field_info() {
   // Work out where this field is being added and adapt labels.
   $path = $_GET['q'];
   $path_parts = explode('/', $path);
+  $second_part = isset($path_parts[2]) ? $path_parts[2] : '';
 
-  switch ($path_parts[2]) {
+  switch ($second_part) {
     case 'types':
       $label = t('Machine name from node title');
       $description = t('A field with a scrubbed machine-safe variation of the node title.');
