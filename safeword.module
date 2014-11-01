@@ -576,3 +576,12 @@ function safeword_ajax_callback() {
 
   drupal_json_output($source);
 }
+
+/**
+ * Implements hook_ctools_plugin_directory().
+ */
+function safeword_ctools_plugin_directory($owner, $plugin_type) {
+  if ($owner == 'ctools' && $plugin_type == 'arguments') {
+    return 'plugins/' . $plugin_type;
+  }
+}
