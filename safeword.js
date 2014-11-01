@@ -115,7 +115,7 @@
               if ($source.val() !== '') {
                 var request = $.ajax({
                   cache: false,
-                  url: "/safeword/ajax/transliterate",
+                  url: Drupal.settings.basePath + "safeword/ajax/transliterate",
                   type: "POST",
                   dataType: "json",
                   data: {source: $source.val()},
